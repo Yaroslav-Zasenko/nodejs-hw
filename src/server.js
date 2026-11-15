@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
-import pino from "pino-http";
 import "dotenv/config";
 import { connectMongoDB } from "./db/connectMongoDB.js";
-import { notesRouter } from "./routers/notesRouters.js";
+import { logger } from "./middleware/logger.js"; // Імпортуємо наш створений логер
+import { notesRouter } from "./routes/notesRoutes.js"; // Виправляємо шлях на правильну папку та файл
 import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -13,7 +13,7 @@ const app = express();
 // Підключаємо базові middleware
 app.use(cors());
 app.use(express.json());
-app.use(pino());
+app.use(logger); // Використовуємо наш винесений логер з middleware/logger.js
 
 // Підключаємо наші роути для нотаток
 app.use(notesRouter);
