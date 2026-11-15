@@ -1,4 +1,4 @@
-import { Note } from '../models/Note.js';
+import { Note } from '../models/note.js';
 import createHttpError from 'http-errors';
 
 // 1. Отримати всі нотатки (повертає масив JSON)
