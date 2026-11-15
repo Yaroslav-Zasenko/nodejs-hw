@@ -1,10 +1,13 @@
 import pinoHttp from 'pino-http';
 
 export const logger = pinoHttp({
-  transport: {
-    target: 'pino-pretty',
-    options: {
-      colorize: true, // Додає кольорове оформлення для зручності у консолі
-    },
-  },
+  transport:
+    process.env.NODE_ENV === 'production'
+      ? undefined // У продакшні (на Render) транспорт не використовуємо
+      : {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+          },
+        },
 });
