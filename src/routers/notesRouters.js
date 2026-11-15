@@ -3,8 +3,8 @@ import {
   getNotesController, 
   createNoteController, 
   getNoteByIdController,
-  updateNoteController,
-  deleteNoteController 
+  deleteNoteController,
+  updateNote
 } from "../controllers/notesControllers.js";
 
 const router = Router();
@@ -18,8 +18,8 @@ router.post("/notes", createNoteController);
 // Отримати нотатку за її ID
 router.get("/notes/:id", getNoteByIdController);
 
-// Оновити нотатку за її ID
-router.patch("/notes/:id", updateNoteController);
+// Оновити нотатку за її ID (згідно з останнім завданням)
+router.patch("/notes/:noteId", updateNote);
 
 // Видалити нотатку за її ID
 router.delete("/notes/:id", deleteNoteController);

@@ -1,3 +1,4 @@
+import createHttpError from 'http-errors';
 import { Note } from "../models/note.js";
 
 // Отримати всі нотатки
@@ -105,6 +106,32 @@ export const deleteNoteController = async (req, res, next) => {
       status: 200,
       message: 'Successfully deleted a note!',
       data: deletedNote,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateNote = async (req, res, next) => {
+  try {
+    const { noteId } = req.params;
+
+    // Оновлюємо нотатку за ID та повертаємо оновлену версію ({ new: true })
+    const updatedNote = await Note.findByIdAndUpdate(noteId, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    // Якщо нотатку не знайдено — повертаємо 404 через http-errors
+    if (!updatedNote) {
+      return next(createHttpError(404, 'Note not found'));
+    }
+
+    // Успішна відповідь зі статусом 200 та оновленою нотаткою
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully updated a note!',
+      data: updatedNote,
     });
   } catch (error) {
     next(error);
