@@ -1,138 +1,73 @@
+import { Note } from '../models/Note.js';
 import createHttpError from 'http-errors';
-import { Note } from "../models/note.js";
 
-// Отримати всі нотатки
-export const getNotesController = async (req, res) => {
+// 1. Отримати всі нотатки (повертає масив JSON)
+export const getAllNotes = async (req, res, next) => {
   try {
     const notes = await Note.find();
-    res.status(200).json({
-      status: 200,
-      message: "Successfully retrieved all notes!",
-      data: notes,
-    });
+    res.status(200).json(notes);
   } catch (error) {
-    res.status(500).json({
-      status: 500,
-      message: "Failed to retrieve notes",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-// Створити нову нотатку
-export const createNoteController = async (req, res) => {
+// 2. Отримати нотатку за ID
+export const getNoteById = async (req, res, next) => {
   try {
-    const newNote = await Note.create(req.body);
-
-    res.status(201).json({
-      status: 201,
-      message: "Successfully created a note!",
-      data: newNote,
-    });
-  } catch (error) {
-    res.status(400).json({
-      status: 400,
-      message: "Failed to create note",
-      error: error.message,
-    });
-  }
-};
-
-export const getNoteByIdController = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const note = await Note.findById(id);
+    const { noteId } = req.params;
+    const note = await Note.findById(noteId);
 
     if (!note) {
-      return res.status(404).json({
-        status: 404,
-        message: 'Note not found',
-      });
+      return next(createHttpError(404, 'Note not found'));
     }
 
-    res.status(200).json({
-      status: 200,
-      message: `Successfully found note with id: ${id}`,
-      data: note,
-    });
+    res.status(200).json(note);
   } catch (error) {
     next(error);
   }
 };
 
-export const updateNoteController = async (req, res, next) => {
+// 3. Створити нову нотатку (повертає об'єкт нотатки без обгортки)
+export const createNote = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    
-    // findByIdAndUpdate шукає за ID, оновлює тілом запиту (req.body)
-    // { new: true } повертає вже оновлений документ, а { runValidators: true } перевіряє схему Mongoose
-    const updatedNote = await Note.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updatedNote) {
-      return res.status(404).json({
-        status: 404,
-        message: 'Note not found',
-      });
-    }
-
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully updated a note!',
-      data: updatedNote,
-    });
+    const newNote = await Note.create(req.body);
+    res.status(201).json(newNote);
   } catch (error) {
     next(error);
   }
 };
 
-export const deleteNoteController = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    
-    // findByIdAndDelete шукає документ за ID і видаляє його з бази даних
-    const deletedNote = await Note.findByIdAndDelete(id);
-
-    if (!deletedNote) {
-      return res.status(404).json({
-        status: 404,
-        message: 'Note not found',
-      });
-    }
-
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully deleted a note!',
-      data: deletedNote,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
+// 4. Оновити нотатку за ID
 export const updateNote = async (req, res, next) => {
   try {
     const { noteId } = req.params;
 
-    // Оновлюємо нотатку за ID та повертаємо оновлену версію ({ new: true })
     const updatedNote = await Note.findByIdAndUpdate(noteId, req.body, {
-      new: true,
+      returnDocument: 'after',
       runValidators: true,
     });
 
-    // Якщо нотатку не знайдено — повертаємо 404 через http-errors
     if (!updatedNote) {
       return next(createHttpError(404, 'Note not found'));
     }
 
-    // Успішна відповідь зі статусом 200 та оновленою нотаткою
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully updated a note!',
-      data: updatedNote,
-    });
+    res.status(200).json(updatedNote);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// 5. Видалити нотатку за ID
+export const deleteNote = async (req, res, next) => {
+  try {
+    const { noteId } = req.params;
+    const deletedNote = await Note.findByIdAndDelete(noteId);
+
+    if (!deletedNote) {
+      return next(createHttpError(404, 'Note not found'));
+    }
+
+    res.status(200).json(deletedNote);
   } catch (error) {
     next(error);
   }

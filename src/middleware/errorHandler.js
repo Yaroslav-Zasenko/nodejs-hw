@@ -1,15 +1,18 @@
-import { isHttpError } from "http-errors";
+import { isHttpError } from 'http-errors';
 
 export const errorHandler = (err, req, res, next) => {
+  // Якщо це помилка, створена за допомогою http-errors
   if (isHttpError(err)) {
     return res.status(err.status).json({
+      status: err.status,
       message: err.message,
     });
   }
 
-  const isProd = process.env.NODE_ENV === "production";
-
+  // Для всіх інших непередбачуваних помилок (наприклад, збої БД)
   res.status(500).json({
-    message: isProd ? "Oops something went wrong!" : err.stack,
+    status: 500,
+    message: 'Something went wrong',
+    error: err.message, // Використовуємо err.message замість err.stack
   });
 };

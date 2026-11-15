@@ -3,7 +3,7 @@ import cors from "cors";
 import "dotenv/config";
 import { connectMongoDB } from "./db/connectMongoDB.js";
 import { logger } from "./middleware/logger.js"; // Імпортуємо наш створений логер
-import { notesRouter } from "./routes/notesRoutes.js"; // Виправляємо шлях на правильну папку та файл
+import notesRouter from "./routes/notesRoutes.js";
 import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 

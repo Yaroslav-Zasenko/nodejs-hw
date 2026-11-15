@@ -1,27 +1,27 @@
 import { Router } from "express";
 import { 
-  getNotesController, 
-  createNoteController, 
-  getNoteByIdController,
-  deleteNoteController,
+  getAllNotes, 
+  createNote, 
+  getNoteById,
+  deleteNote,
   updateNote
 } from "../controllers/notesController.js";
 
 const router = Router();
 
 // Маршрут для отримання всіх нотаток
-router.get("/notes", getNotesController);
+router.get("/notes", getAllNotes);
 
 // Створити нову нотатку
-router.post("/notes", createNoteController);
+router.post("/notes", createNote);
 
 // Отримати нотатку за її ID
-router.get("/notes/:id", getNoteByIdController);
+router.get("/notes/:noteId", getNoteById);
 
-// Оновити нотатку за її ID (згідно з останнім завданням)
+// Оновити нотатку за її ID
 router.patch("/notes/:noteId", updateNote);
 
 // Видалити нотатку за її ID
-router.delete("/notes/:id", deleteNoteController);
+router.delete("/notes/:noteId", deleteNote);
 
-export const notesRouter = router;
+export default router;
