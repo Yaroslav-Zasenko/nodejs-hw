@@ -2,10 +2,11 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import { connectMongoDB } from "./db/connectMongoDB.js";
-import { logger } from "./middleware/logger.js"; // Імпортуємо наш створений логер
+import { logger } from "./middleware/logger.js";
 import notesRouter from "./routes/notesRoutes.js";
 import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { errors } from "celebrate";
 
 // Створюємо екземпляр додатка
 const app = express();
@@ -13,7 +14,7 @@ const app = express();
 // Підключаємо базові middleware
 app.use(cors());
 app.use(express.json());
-app.use(logger); // Використовуємо наш винесений логер з middleware/logger.js
+app.use(logger);
 
 // Підключаємо наші роути для нотаток
 app.use(notesRouter);
@@ -26,7 +27,10 @@ app.get("/test-error", () => {
 // 1. Middleware для обробки неіснуючих маршрутів (404)
 app.use(notFoundHandler);
 
-// 2. Централізований обробник помилок (має бути ОСТАННІМ)
+// 2. Перехоплення помилок валідації Celebrate (повертає 400 Bad Request)
+app.use(errors());
+
+// 3. Централізований обробник помилок (має бути ОСТАННІМ)
 app.use(errorHandler);
 
 // Зчитуємо порт та запускаємо сервер разом із базою даних
